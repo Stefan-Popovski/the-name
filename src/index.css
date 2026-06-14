@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0; padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: #FFFFFF;
+  color: #1A1523;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Typography ── */
+.font-display { font-family: 'Space Grotesk', sans-serif; }
+.gradient-text {
+  background: linear-gradient(135deg, #6D28D9, #FACC15);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Layout helpers ── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.section-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .section-grid { grid-template-columns: 1fr 1fr; gap: 80px; }
+  .section-grid.reverse > :first-child { order: 2; }
+  .section-grid.reverse > :last-child { order: 1; }
+}
+
+/* ── App content area ── */
+.app-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+@media (min-width: 1024px) {
+  .app-content { max-width: 900px; padding: 0 40px; }
+}
+
+/* ── Nav responsive ── */
+.top-nav-links { display: none; }
+.bottom-nav-bar { display: flex; }
+@media (min-width: 768px) {
+  .top-nav-links { display: flex; }
+  .bottom-nav-bar { display: none; }
+}
+
+/* ── Product grid ── */
+.products-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 640px) { .products-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) { .products-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* ── Profile 2-col ── */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .profile-grid { grid-template-columns: 340px 1fr; }
+}
+
+/* ── Dashboard grid ── */
+.passport-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .passport-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Hero headline ── */
+.hero-title { font-size: clamp(40px, 5.4vw, 74px); }
+.section-title { font-size: clamp(27px, 3vw, 44px); }
+
+/* ── Leaflet ── */
+.leaflet-container { width: 100%; height: 100%; background: #0f0f1a; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: #6D28D9; border-radius: 4px; }
+
+/* ── Animations ── */
+@keyframes gradientShift {
+  0%,100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animated-bg {
+  background: linear-gradient(135deg, #0B0014 0%, #1E1B2E 40%, #2D1B69 70%, #1E1B2E 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 10s ease infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+.float-anim { animation: float 4s ease-in-out infinite; }
+
+@keyframes stampIn {
+  from { opacity: 0; transform: scale(3) rotate(-15deg); }
+  to { opacity: 1; transform: scale(1) rotate(-5deg); }
+}
+.stamp-anim { animation: stampIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+@keyframes confettiFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes pulse-glow {
+  0%,100% { box-shadow: 0 0 20px rgba(109,40,217,0.4), 0 0 40px rgba(109,40,217,0.2); }
+  50% { box-shadow: 0 0 40px rgba(109,40,217,0.7), 0 0 80px rgba(109,40,217,0.3); }
+}
+.glow-violet { animation: pulse-glow 2s ease-in-out infinite; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.7s ease forwards; }
+
+@keyframes markerPop {
+  from { opacity: 0; transform: scale(0) translate(-50%,-50%); }
+  to { opacity: 1; transform: scale(1) translate(-50%,-50%); }
+}
+
+/* ── Landing section padding ── */
+.section-pad { padding: 80px 0; }
+@media (min-width: 768px) { .section-pad { padding: 120px 0; } }
