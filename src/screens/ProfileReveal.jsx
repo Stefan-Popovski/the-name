@@ -2,21 +2,35 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStore } from '../store/useStore'
-import Confetti from '../components/Confetti'
+
+/* Palette — shared with the landing page's editorial sections */
+const INK = '#14101F'
+const BODY = '#574F69'
+const MUTE = '#938CA8'
+const LINE = '#ECE8F3'
+const YELLOW = '#FACC15'
+const TINT = '#FAF8FD'
+const LILAC = '#F4EEFF'
+const LILAC_BD = '#E4D7FB'
 
 export default function ProfileReveal() {
   const navigate = useNavigate()
   const { user, addPoints } = useStore()
   const [stage, setStage] = useState(0) // 0=loading 1=archetype 2=full 3=collabs
-  const [confetti, setConfetti] = useState(false)
 
   const profile = user?.profile
   if (!profile) { navigate('/'); return null }
 
+  const accent = profile.archetype.color
+  const title = stripEmoji(profile.archetype.title)
+  const destination = stripEmoji(profile.dreamDestination)
+  const words = title.replace(/^the\s+/i, '').split(' ')
+  const monogram = (words[0]?.[0] || 'T').toUpperCase()
+
   useEffect(() => {
     const timers = [
       setTimeout(() => setStage(1), 1000),
-      setTimeout(() => { setStage(2); setConfetti(true) }, 2200),
+      setTimeout(() => setStage(2), 2200),
       setTimeout(() => setStage(3), 3400),
     ]
     return () => timers.forEach(clearTimeout)
@@ -29,45 +43,31 @@ export default function ProfileReveal() {
 
   return (
     <div style={{
+      position: 'relative',
       minHeight: '100dvh', display: 'flex', flexDirection: 'column',
-      background: 'linear-gradient(160deg, #1E1B2E 0%, #2D1B69 50%, #1E1B2E 100%)',
+      background: TINT, color: INK,
       overflow: 'hidden', padding: '0 24px',
+      fontFamily: 'Inter, sans-serif',
     }}>
-      <Confetti active={confetti} count={80} />
+      {/* Soft accent wash — subtle, tinted by the archetype (not a flat purple) */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(90% 60% at 50% -5%, ${accent}14, transparent 60%)` }} />
 
-      {/* Particles */}
-      {[...Array(8)].map((_, i) => (
-        <motion.div key={i}
-          animate={{ y: [-20, -80, -20], x: [0, (i % 2 === 0 ? 20 : -20), 0], opacity: [0, 0.6, 0] }}
-          transition={{ duration: 3 + i * 0.5, repeat: Infinity, delay: i * 0.4 }}
-          style={{
-            position: 'fixed',
-            left: `${10 + i * 12}%`, bottom: '10%',
-            width: 6, height: 6, borderRadius: '50%',
-            background: i % 2 === 0 ? '#6D28D9' : '#FACC15',
-            pointerEvents: 'none',
-          }}
-        />
-      ))}
-
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: 40 }}>
+      <div style={{ position: 'relative', zIndex: 1, flex: 1, width: '100%', maxWidth: 480, margin: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: 48, paddingBottom: 32 }}>
 
         {/* Loading */}
         <AnimatePresence>
           {stage === 0 && (
-            <motion.div
-              exit={{ opacity: 0, scale: 0.8 }}
-              style={{ textAlign: 'center' }}
-            >
+            <motion.div exit={{ opacity: 0, scale: 0.92 }} style={{ textAlign: 'center' }}>
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                style={{ fontSize: 56, display: 'inline-block', marginBottom: 16 }}
-              >
-                🌍
-              </motion.div>
-              <p style={{ color: '#A78BFA', fontSize: 16, fontFamily: 'Syne, sans-serif', fontWeight: 600 }}>
-                Analysing your vibe...
+                transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
+                style={{
+                  width: 40, height: 40, borderRadius: '50%', margin: '0 auto 18px',
+                  border: `3px solid ${accent}22`, borderTopColor: accent,
+                }}
+              />
+              <p style={{ color: MUTE, fontSize: 14, fontWeight: 600, letterSpacing: 0.3, margin: 0 }}>
+                Analysing your vibe…
               </p>
             </motion.div>
           )}
@@ -77,44 +77,42 @@ export default function ProfileReveal() {
         <AnimatePresence>
           {stage >= 1 && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-              style={{ textAlign: 'center', marginBottom: 24 }}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              style={{ textAlign: 'center', marginBottom: 28 }}
             >
               <div style={{
-                width: 100, height: 100, borderRadius: '50%', margin: '0 auto 16px',
-                background: `linear-gradient(135deg, ${profile.archetype.color}40, ${profile.archetype.color}80)`,
-                border: `3px solid ${profile.archetype.color}`,
+                width: 84, height: 84, borderRadius: '50%', margin: '0 auto 22px',
+                background: `${accent}12`,
+                border: `1px solid ${accent}2e`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 48,
-                boxShadow: `0 0 40px ${profile.archetype.color}60`,
+                fontFamily: 'Space Grotesk, sans-serif', fontWeight: 700,
+                fontSize: 36, color: accent, lineHeight: 1,
+                boxShadow: `0 16px 36px -16px ${accent}66`,
               }}>
-                {profile.archetype.emoji}
+                {monogram}
               </div>
+
+              <p style={{
+                fontFamily: 'Space Grotesk, sans-serif', fontWeight: 600,
+                fontSize: 12.5, letterSpacing: 2.5, textTransform: 'uppercase',
+                color: MUTE, margin: '0 0 10px',
+              }}>
+                Your archetype
+              </p>
               <motion.h1
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.18 }}
                 style={{
-                  fontFamily: 'Syne, sans-serif', fontWeight: 800,
-                  fontSize: 28, color: 'white', margin: '0 0 4px',
+                  fontFamily: 'Space Grotesk, sans-serif', fontWeight: 700,
+                  fontSize: 'clamp(28px, 8vw, 38px)', lineHeight: 1.08,
+                  letterSpacing: '-0.5px', color: accent, margin: 0,
                 }}
               >
-                You're
+                {title}
               </motion.h1>
-              <motion.h2
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                style={{
-                  fontFamily: 'Syne, sans-serif', fontWeight: 800,
-                  fontSize: 24, color: '#FACC15', margin: 0,
-                  textShadow: '0 0 30px rgba(250,204,21,0.5)',
-                }}
-              >
-                {profile.archetype.title}
-              </motion.h2>
             </motion.div>
           )}
         </AnimatePresence>
@@ -123,22 +121,22 @@ export default function ProfileReveal() {
         <AnimatePresence>
           {stage >= 2 && (
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               style={{
-                background: 'rgba(255,255,255,0.05)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                borderRadius: 24, padding: 20, marginBottom: 16,
+                background: '#fff',
+                border: `1px solid ${LINE}`,
+                borderRadius: 22, padding: 22, marginBottom: 14,
+                boxShadow: '0 30px 70px -45px rgba(20,16,31,0.45)',
               }}
             >
-              <p style={{ color: '#C4B5FD', fontSize: 14, lineHeight: 1.6, margin: '0 0 16px' }}>
+              <p style={{ color: BODY, fontSize: 15, lineHeight: 1.65, margin: '0 0 18px' }}>
                 {profile.archetype.blurb}
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                <Chip icon="✈️" text={`Dream: ${profile.dreamDestination}`} />
-                <Chip icon="🎨" text={profile.travelStyle} />
+                <Chip label="Dream" text={destination} accent={accent} />
+                <Chip label="Style" text={profile.travelStyle} accent={accent} />
               </div>
             </motion.div>
           )}
@@ -148,64 +146,70 @@ export default function ProfileReveal() {
         <AnimatePresence>
           {stage >= 3 && (
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             >
               <div style={{
-                background: 'rgba(250,204,21,0.08)',
-                border: '1px solid rgba(250,204,21,0.3)',
-                borderRadius: 20, padding: 16, marginBottom: 16,
+                background: LILAC,
+                border: `1px solid ${LILAC_BD}`,
+                borderRadius: 20, padding: 18, marginBottom: 18,
               }}>
-                <p style={{ color: '#FACC15', fontSize: 13, fontWeight: 700, margin: '0 0 10px' }}>
-                  🤝 Your best collab matches
+                <p style={{
+                  fontFamily: 'Space Grotesk, sans-serif', fontWeight: 700,
+                  fontSize: 12.5, letterSpacing: 0.4, color: INK, margin: '0 0 14px',
+                }}>
+                  Your best collab matches
                 </p>
                 {profile.recommendedSuppliers.slice(0, 3).map((s, i) => (
                   <motion.div
                     key={s}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: i < 2 ? 8 : 0 }}
+                    transition={{ delay: 0.1 + i * 0.08 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: i < 2 ? 11 : 0 }}
                   >
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FACC15', flexShrink: 0 }} />
-                    <span style={{ color: '#E9D5FF', fontSize: 13 }}>{s}</span>
+                    <span style={{ display: 'inline-flex', width: 22, height: 22, borderRadius: '50%', background: '#fff', border: `1px solid ${LILAC_BD}`, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.2 4.2L19 7" /></svg>
+                    </span>
+                    <span style={{ color: BODY, fontSize: 14.5, fontWeight: 500 }}>{s}</span>
                   </motion.div>
                 ))}
               </div>
 
               <motion.button
-                whileHover={{ scale: 1.02, boxShadow: '0 8px 32px rgba(250,204,21,0.4)' }}
+                whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={goToDashboard}
                 style={{
                   width: '100%',
-                  background: 'linear-gradient(135deg, #FACC15, #F59E0B)',
-                  color: '#1E1B2E', border: 'none', borderRadius: 999,
-                  padding: '16px', fontSize: 16, fontWeight: 800,
-                  fontFamily: 'Syne, sans-serif', cursor: 'pointer',
-                  boxShadow: '0 4px 24px rgba(250,204,21,0.4)',
-                  marginBottom: 12,
+                  background: `linear-gradient(135deg, ${YELLOW}, #F59E0B)`,
+                  color: INK, border: 'none', borderRadius: 14,
+                  padding: '16px', fontSize: 16, fontWeight: 700,
+                  fontFamily: 'Space Grotesk, sans-serif', cursor: 'pointer',
+                  letterSpacing: 0.2,
+                  boxShadow: '0 14px 30px -12px rgba(245,158,11,0.6)',
+                  marginBottom: 10,
                 }}
               >
-                Add to my Passport 🛂 →
+                Add to my Passport →
               </motion.button>
 
               <button
                 onClick={() => {
-                  const text = `I just got my Travelpreneur Passport on Tourifique! I'm ${profile.archetype.title} 🌍✨`
+                  const text = `I just got my Travelpreneur Passport on Tourifique — I'm ${title}.`
                   if (navigator.share) navigator.share({ title: 'My Tourifique Passport', text })
                   else navigator.clipboard.writeText(text)
                 }}
                 style={{
-                  width: '100%', background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  color: 'white', borderRadius: 999, padding: '14px',
-                  fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                  width: '100%', background: '#fff',
+                  border: `1px solid ${LINE}`,
+                  color: INK, borderRadius: 14, padding: '14px',
+                  fontSize: 14.5, fontWeight: 600, cursor: 'pointer',
                   fontFamily: 'Inter, sans-serif',
                 }}
               >
-                📤 Share my result
+                Share my result
               </button>
             </motion.div>
           )}
@@ -215,15 +219,26 @@ export default function ProfileReveal() {
   )
 }
 
-function Chip({ icon, text }) {
+/* Remove emoji / pictographs / flags / variation selectors from data strings */
+function stripEmoji(s = '') {
+  return s
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{200D}]/gu, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+}
+
+function Chip({ label, text, accent }) {
   return (
     <span style={{
-      background: 'rgba(255,255,255,0.1)',
-      border: '1px solid rgba(255,255,255,0.15)',
-      borderRadius: 999, padding: '4px 10px',
-      fontSize: 12, color: '#E9D5FF', display: 'inline-flex', alignItems: 'center', gap: 4,
+      background: LILAC,
+      border: `1px solid ${LILAC_BD}`,
+      borderRadius: 999, padding: '6px 6px 6px 12px',
+      fontSize: 12.5, fontWeight: 500, color: BODY,
+      display: 'inline-flex', alignItems: 'center', gap: 8,
     }}>
-      {icon} {text}
+      <span style={{ width: 5, height: 5, borderRadius: '50%', background: accent, flexShrink: 0 }} />
+      <span style={{ color: MUTE, fontWeight: 700, letterSpacing: 0.3 }}>{label}</span>
+      <span style={{ background: '#fff', border: `1px solid ${LILAC_BD}`, borderRadius: 999, padding: '3px 10px' }}>{text}</span>
     </span>
   )
 }

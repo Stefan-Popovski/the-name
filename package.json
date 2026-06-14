@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@svg-maps/world": "^2.0.0",
     "@tailwindcss/vite": "^4.3.1",
     "framer-motion": "^12.40.0",
+    "html-to-image": "^1.11.13",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.18.0",
     "react": "^19.2.6",
