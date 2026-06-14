@@ -106,12 +106,12 @@ export default function Dashboard() {
       <Confetti active={showConfetti} />
 
       {/* ── slim action bar ── */}
-      <div style={{ maxWidth: 980, margin: '0 auto', padding: '22px 24px 6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="ps-head" style={{ maxWidth: 980, margin: '0 auto', padding: '22px 24px 6px' }}>
         <div>
           <p style={{ color: GOLD, fontSize: 10.5, fontWeight: 700, letterSpacing: 3, margin: 0 }}>TOURIFIQUE</p>
           <h1 className="ps-display" style={{ fontWeight: 700, fontSize: 22, color: '#fff', margin: '2px 0 0', letterSpacing: -0.4 }}>Your Passport</h1>
         </div>
-        <div style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
+        <div className="ps-actions">
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(231,198,107,0.14)', border: '1px solid rgba(231,198,107,0.32)', color: GOLD, borderRadius: 999, padding: '7px 13px', fontSize: 13, fontWeight: 700 }}>
             ★ {points} pts
           </span>
@@ -318,7 +318,7 @@ function FieldP({ label, value, wide }) {
   return (
     <div style={{ gridColumn: wide ? '1 / -1' : 'auto', minWidth: 0 }}>
       <p style={lbl}>{label}</p>
-      <p className="ps-display" style={{ fontSize: 14, fontWeight: 600, color: INK, margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</p>
+      <p className="ps-display" style={{ fontSize: 13.5, fontWeight: 600, color: INK, margin: '2px 0 0', lineHeight: 1.2, wordBreak: 'break-word' }}>{value}</p>
     </div>
   )
 }
@@ -413,6 +413,11 @@ function Field2({ placeholder, value, onChange, type = 'text', autoFocus }) {
 
 const CSS = `
   .ps-display { font-family: 'Space Grotesk', sans-serif; }
+  .ps-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .ps-actions { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; }
+  @media (max-width: 540px) {
+    .ps-actions { width: 100%; }
+  }
   .ps-book {
     display: grid; grid-template-columns: 1fr; gap: 0;
     background: linear-gradient(135deg, ${COVER_B}, ${COVER_A});
